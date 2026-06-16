@@ -11,11 +11,8 @@ st.set_page_config(page_title="AI Autism Support Toolkit", page_icon="🧠", lay
 
 api_key = st.secrets.get("OPENAI_API_KEY")
 if not api_key:
-    st.error("OpenAI API key not found. Add OPENAI_API_KEY to Streamlit Cloud secrets.")
+    st.error("OpenAI API key not found. Create `.streamlit/secrets.toml` and add `OPENAI_API_KEY = \"your_openai_api_key_here\"`.")
     st.stop()
-
-# Allow overriding the model via Streamlit secrets; default to a generally available model alias
-MODEL = st.secrets.get("OPENAI_MODEL", "gpt-4o-mini")
 
 client = OpenAI(api_key=api_key)
 
@@ -66,17 +63,11 @@ tool = st.sidebar.selectbox(
 
 # ---------- AI Helper ----------
 def ask_ai(prompt):
-    try:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        # New OpenAI client returns choices with message content
-        return response.choices[0].message.content
-    except Exception as e:
-        # Surface a friendly error in the Streamlit app and re-raise for logs
-        st.error("AI request failed: " + str(e))
-        raise
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
 
 # ---------- Download Buttons ----------
 def show_downloads(text, filename):
